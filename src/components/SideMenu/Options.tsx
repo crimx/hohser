@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { List, ListItem, ListItemIcon, Collapse, ListItemText, ListItemSecondaryAction, Switch, Divider, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions, Button, TextField, RadioGroup, FormControlLabel, Radio, FormLabel, FormControl, Snackbar, IconButton, Paper, InputBase, Tooltip } from '@material-ui/core';
+import { List, ListItem, ListItemIcon, Collapse, ListItemText, ListItemSecondaryAction, Switch, Divider, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions, Button, TextField, RadioGroup, FormControlLabel, Radio, FormLabel, FormControl, Snackbar, IconButton, Paper, InputBase, Tooltip, withStyles } from '@material-ui/core';
 import SettingsIcon from '@material-ui/icons/Settings';
 import ExpandLess from '@material-ui/icons/ExpandLess';
 import ExpandMore from '@material-ui/icons/ExpandMore';
@@ -34,6 +34,7 @@ interface Props {
   importDomains: (domainsList: Domain[]) => void;
   updateHighlightCustomColors: (colors: string[]) => void;
   domainsList: Array<Domain>;
+  classes: any;
 }
 
 interface State {
@@ -48,6 +49,14 @@ interface State {
   fixColors: string[];
   newColorError: boolean;
 }
+
+const styles = (theme: any) => ({
+  rainbow: {
+    backgroundImage: 'linear-gradient(to left, violet, indigo, blue, green, yellow, orange, red)',
+    color: 'transparent',
+    borderRadius: 15
+  },
+});
 
 class Options extends React.Component<Props, State> {
   state = {
@@ -196,7 +205,7 @@ class Options extends React.Component<Props, State> {
   }
 
   public addColor = (): void => {
-    if (/^[0-9A-F]{6}$/i.test(this.state.newColor)) {
+    if (/^[0-9A-F]{6}$/i.test(this.state.newColor) || /^super\d{1,2}$/i.test(this.state.newColor) ) {
       const colors: string[] = [...this.state.colors];
       colors.push(this.state.newColor);
       this.setState({colors, newColor: '', newColorError: false});
@@ -404,7 +413,9 @@ class Options extends React.Component<Props, State> {
           { this.state.colors.map((color: string, i: number) => (
             <ListItem>
               <ListItemIcon>
-                <InvertColorsIcon style={{ color: '#'+color }} />
+                <InvertColorsIcon
+                  className={ color.includes('super') ? this.props.classes.rainbow : '' }
+                  style={{ color: color.includes('super') ? undefined : '#'+color }} />
               </ListItemIcon>
               <ListItemText primary={ `Color ${i+4} (${color})` } />
               { this.state.colors.length === i + 1 ?
@@ -456,5 +467,5 @@ class Options extends React.Component<Props, State> {
   }
 }
 
-export default (Options);
+export default withStyles(styles)(Options);
 
